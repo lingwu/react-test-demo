@@ -4,6 +4,8 @@ import { routerRedux } from 'dva/router';
 import styles from './Users.css';
 import { PAGE_SIZE } from '../constants';
 
+import UserModal  from './UserModal';
+
 function Users({ dispatch, list: dataSource, total, page: current }) {
   function deleteHandler(id) {
     dispatch({
@@ -17,6 +19,13 @@ function Users({ dispatch, list: dataSource, total, page: current }) {
       pathname: '/users',
       query: { page }
     }))
+  }
+
+  function editHandle(id, values) {
+    dispatch({
+      type: 'user/patch',
+      payload: { id, values }
+    })
   }
 
   const columns = [
@@ -41,7 +50,10 @@ function Users({ dispatch, list: dataSource, total, page: current }) {
       key: 'operation',
       render: (text, record) => (
         <span className={styles.operation}>
-          <a href=''>Edit</a>
+          <UserModal  record={record} onOk={editHandle.bind(null, record.id)}>
+            <a href=''>Edit</a>
+          </UserModal>
+
           <Popconfirm title='Confirm to delete?' onConfirm={deleteHandler.bind(null, record.id)}>
             <a href=''>Delete</a>
           </Popconfirm>
